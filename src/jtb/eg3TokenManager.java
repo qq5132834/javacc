@@ -2,6 +2,7 @@
 package jtb;
 import jtb.syntaxtree.*;
 import jtb.visitor.*;
+import oo.syntaxtree.*;
 import java.util.Vector;
 
 /** Token Manager. */
