@@ -40,46 +40,6 @@ SKIP :
 |	"\r\n"
 }
 
-TOKEN : 
-{
-	< PLUS: "+" >
-|	< MINUS: "-" >
-|	< MULTIPLY: "*" >
-|	< DIVIDE: "/" >
-
-|	< T_OPEN_SB: "(" >
-|	< T_CLOSE_SB: ")" >
-|	< T_DEDUCTION: "->" >
-|	< T_EQUAL: "=" >
-|	< T_EQUAL2: "==" >
-|	< T_NOTEQUAL: "<>" >
-|	< T_NOTEQUAL2: "!=" >
-|	< T_SINGLE_Q: "'" >
-|	< T_AND: "^">
-|	< T_COMM: ",">
-}
-
-TOKEN :
-{	/* Identifiers */
-	<IDENTIFIER: ( <LETTER> ) (<LETTER> | "_" | <DIGIT>)* >
-}
-
-TOKEN :
-{
-	<IDENT_POINT_IDENT: <IDENTIFIER> "." <IDENTIFIER> >
-}
-
-TOKEN :
-{
-	<EXPRE: <T_SINGLE_Q> <IDENTIFIER> <T_SINGLE_Q>  >
-}
-
-
-TOKEN :
-{
-    < CONSTANT: ( <DIGIT> )+ >
-|   < #DIGIT: ["0" - "9"] >
-}
 
 TOKEN:
 {
@@ -299,7 +259,62 @@ TOKEN:
 			]>
 }
 
+TOKEN : 
+{
+	< PLUS: "+" >
+|	< MINUS: "-" >
+|	< MULTIPLY: "*" >
+|	< DIVIDE: "/" >
 
+|	< T_OPEN_SB: "(" >
+|	< T_CLOSE_SB: ")" >
+|	< T_DEDUCTION: "->" >
+|	< T_EQUAL: "=" >
+|	< T_EQUAL2: "==" >
+|	< T_NOTEQUAL: "<>" >
+|	< T_NOTEQUAL2: "!=" >
+|	< T_SINGLE_Q: "'" >
+|	< T_AND: "^">
+|	< T_COMM: ",">
+|	< T_POINT: ".">
+}
+
+TOKEN :
+{	/* Identifiers */
+	<IDENTIFIER: ( <LETTER> ) (<LETTER> | "_" | <DIGIT>)* >
+}
+
+TOKEN :
+{
+	<IDENT_POINT_IDENT: <IDENTIFIER> <T_POINT>  <IDENTIFIER> >
+}
+
+TOKEN :
+{
+	<EXPRE: <T_SINGLE_Q> <IDENTIFIER> <T_SINGLE_Q>  >
+}
+
+
+TOKEN :
+{
+    < CONSTANT: ( <DIGIT> )+ >
+|   < #DIGIT: ["0" - "9"] >
+}
+
+TOKEN :
+{
+	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT> <T_COMM> <IDENT_POINT_IDENT> <T_CLOSE_SB> >
+}
+
+TOKEN :
+{
+	<REE_TABLE: <IDENTIFIER> <T_OPEN_SB> <IDENTIFIER> <T_CLOSE_SB> >
+}
+
+TOKEN :
+{
+	<REE_PREDICATE: (<IDENT_POINT_IDENT>) (<T_EQUAL> | <T_EQUAL2> | <T_NOTEQUAL> | <T_NOTEQUAL2>) (<IDENT_POINT_IDENT> | <EXPRE> | <CONSTANT> ) >
+}
 
 String ree() : 
 {
@@ -309,50 +324,20 @@ String ree() :
 	Token token = null;
 }
 {
+	
+//	token = <REE_ML>//	{//		ruleStringBuilder.append(token.image);//	}
+	
+//	|//	token = <REE_TABLE>//	{//		System.out.println(token.image);//		ruleStringBuilder.append(token.image);//	}//	//	|	token = <IDENTIFIER>	{
+		System.out.println(token.image);		ruleStringBuilder.append(token.image);	}
+	
+//	(//		token = <T_AND> //			token = <REE_ML>//			{//				ruleStringBuilder.append(token.image);//			}//			//			|//			token = <REE_TABLE>//			{//				System.out.println(token.image);//				ruleStringBuilder.append(token.image);//			}//			//			|//			token = <REE_PREDICATE>//			{//				ruleStringBuilder.append(token.image);//			}//	)*
+		
 
-	tablefunction = tablefunction()	{		ruleStringBuilder.append(tablefunction);	}
+//	tablefunction = tablefunction()//	{//		ruleStringBuilder.append(tablefunction);//	}//	//	//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 //		tablefunction = tablefunction()//		{//			ruleStringBuilder.append(tablefunction);//		}//	)*//	//	//	token = <T_AND>  //	 //	deduction = deduction()//	{//		ruleStringBuilder.append(deduction);//	}//	//	//	//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	)*
+ 
 	
-	//重复
-	(
-	 	token = <T_AND> 	 	{	 		ruleStringBuilder.append(token.image);	 	}
-	 		tablefunction = tablefunction()		{			ruleStringBuilder.append(tablefunction);		}
-	)*
-	
-	
-	token = <T_AND>  
-	 
-	deduction = deduction()	{		ruleStringBuilder.append(deduction);	}			//重复	(	 	token = <T_AND> 	 	{	 		ruleStringBuilder.append(token.image);	 	}	 	deduction = deduction()	 	{			ruleStringBuilder.append(deduction);	 	}	)*
-	
-
-	//		//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	 //	)*
-	
-	/* 推导-> */
-	token = <T_DEDUCTION>
-	{
-		System.out.println("->");
-		ruleStringBuilder.append(token.image);
-	}
-	
-	deduction = deduction()
-	{
-		ruleStringBuilder.append(deduction);
-	}
-	//重复
-	(
-	 	token = <T_AND>
-	 	{
-	 		ruleStringBuilder.append(token.image);
-	 	}
-	 	deduction = deduction()
-	 	{
-			ruleStringBuilder.append(deduction);
-	 	}
-	)*
-
-	{
-		System.out.println(ruleStringBuilder.toString());
-		return ruleStringBuilder.toString();
-	}
+//	/* 推导-> *///	token = <T_DEDUCTION>//	{//		System.out.println("->");//		ruleStringBuilder.append(token.image);//	}//	//	deduction = deduction()//	{//		ruleStringBuilder.append(deduction);//	}//	//重复//	(//	 	token = <T_AND>//	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	)*
+	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
 }
 
 /**
