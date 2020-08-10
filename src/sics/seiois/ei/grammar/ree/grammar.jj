@@ -280,50 +280,29 @@ TOKEN :
 
 TOKEN :
 {	/* Identifiers */
-	< IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
+	< #IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
 }
 
 TOKEN :
 {
-    < CONSTANT: ( <DIGIT> )+("."(< DIGIT>)+)? >
+    < #CONSTANT: ( <DIGIT> )+("."(< DIGIT>)+)? >
 |   < #DIGIT: ["0" - "9"] >
 }
 
 TOKEN :
 {
-	< IDENT_POINT_IDENT: (<IDENTIFIER>) + (<T_POINT>(< IDENTIFIER >)) >
+	< #IDENT_POINT_IDENT: (<IDENTIFIER>) + (<T_POINT>(< IDENTIFIER >)) >
 }
 
 TOKEN :
 {
-	< EXPRE: (< T_SINGLE_Q >) + (< IDENTIFIER >(<T_SINGLE_Q>))  >
+	< #EXPRE: (< T_SINGLE_Q >) + (< IDENTIFIER >(<T_SINGLE_Q>))  >
 }
 
-//TOKEN :
-//{
-//  < REE_FUNCATION_PARAM :  <EXPRE> | <IDENT_POINT_IDENT> | <CONSTANT>  >
-//}
-
-
-
-
-//TOKEN :
-//{
-////	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT> <T_COMM> <IDENT_POINT_IDENT> <T_CLOSE_SB> >
-//	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT>  <T_CLOSE_SB> >
-//}
-
-
-
-//TOKEN :
-//{
-//	<REE_TABLE: <IDENTIFIER> <T_OPEN_SB> <IDENTIFIER> <T_CLOSE_SB> >
-//}
-
-//TOKEN :
-//{
-//	<REE_PREDICATE: (<IDENT_POINT_IDENT>) (<T_EQUAL> | <T_EQUAL2> | <T_NOTEQUAL> | <T_NOTEQUAL2>) (<IDENT_POINT_IDENT> | <EXPRE> | <CONSTANT> ) >
-//}
+TOKEN :
+{
+  	< REE_PARAM :  ( < IDENTIFIER > | < CONSTANT > | < IDENT_POINT_IDENT > | < EXPRE >) >
+}
 
 String reePredicate() :
 {
@@ -331,7 +310,7 @@ String reePredicate() :
    	 StringBuilder stringBuilder = new StringBuilder();
 }
 {
-  token = <IDENT_POINT_IDENT>
+  token = <REE_PARAM>
   {
      stringBuilder.append(token.image);
   }
@@ -341,7 +320,7 @@ String reePredicate() :
     stringBuilder.append(token.image);
   }
 
-  token = <IDENT_POINT_IDENT>
+  token = <REE_PARAM>
   {
      stringBuilder.append(token.image);
   }
@@ -352,65 +331,13 @@ String reePredicate() :
   }
 }
 
-//String reeMLNameFuncation() :
-//{
-//   Token tablename, token1, token2, token3;
-//   StringBuilder stringBuilder = new StringBuilder();
-//}
-//{
-//  tablename = "ML"
-//  {
-//     stringBuilder.append(token.image);
-//  }
-//  < T_OPEN_SB >
-//		token3 = < IDENTIFIER >
-//		{
-//		  stringBuilder.append(token3.image);
-//		}
-//		< T_COMM >
-//		token3 = < IDENTIFIER >
-//		{
-//		  stringBuilder.append(token3.image);
-//		}
-//		< T_COMM >
-//		token3 = < IDENTIFIER >
-//		{
-//		  stringBuilder.append(token3.image);
-//		}
-//	(
-//	  < T_COMM >
-//	  
-//		  	  (
-//					token1 = < CONSTANT >
-//					{
-//					  stringBuilder.append(token1.image);
-//					}
-//					|
-//					 token2 = < EXPRE >
-//					{
-//					  stringBuilder.append(token2.image);
-//					}
-//					|
-//					 token3 = < IDENT_POINT_IDENT >
-//					{
-//					  stringBuilder.append(token3.image);
-//					}
-//			  )
-//	)*
-//  < T_CLOSE_SB >
-//  {
-//    System.out.println("table(xx,xx,...):" + stringBuilder.toString());
-//    return stringBuilder.toString();
-//  }
-//}
-
 String reeTableNameFuncation() :
 {
    Token tablename, token1, token2, token3;
    StringBuilder stringBuilder = new StringBuilder();
 }
 {
-  tablename = < IDENTIFIER >
+  tablename = < REE_PARAM >
   {
      stringBuilder.append(token.image);
   }
@@ -420,7 +347,7 @@ String reeTableNameFuncation() :
 	         
 	       }
 	       | 
-			token3 = < IDENTIFIER >
+			token3 = < REE_PARAM >
 			{
 			  stringBuilder.append(token3.image);
 			}
@@ -431,6 +358,7 @@ String reeTableNameFuncation() :
     return stringBuilder.toString();
   }
 }
+
 
 String statement() :
 {
@@ -451,7 +379,7 @@ String ree() :
 	Token token = null;
 }
 {
-   //t0.id = t1.id ^ t0.name = t1.name ^ table(t0) ^ table1(t1) ^ ML(t0, t1, t2) -> t0.city = t1.city
+   // table(t0) ^ table1(t1) ^ ML(t0, t1, t2) ^ t0.id = t1.id ^ t0.name = t1.name -> t0.city = t1.city ;
    ";"
  	{
  	  System.out.println("over!");
@@ -474,191 +402,12 @@ String ree() :
 	   System.out.println(deduction);
 	   return ree();
 	}
-    | 
-	tablefunction = reeTableNameFuncation()
-	{
-	   System.out.println(tablefunction);
-	   return ree();
-	}	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
+//    | 
+//	tablefunction = reeTableNameFuncation()
+//	{
+//	   System.out.println(tablefunction);
+//	   return ree();
+//	}
+	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
 }
-
-/**
- * 
- */
-String deduction() :
-{
-	String leftDeduction;
-	String rightDeduction;
-	Token token;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	 
-	 leftDeduction = leftDeduction()
-	 {
-	 	deductionStringBuilder.append(leftDeduction);
-	 }
-	  
-	
-	 /* =、==、<>、!= */
-	 ( 
-		  token = <T_EQUAL> 
-		| token = <T_EQUAL2> 
-		| token = <T_NOTEQUAL> 
-		| token = <T_NOTEQUAL2> 
-	 )
-	 {
-		deductionStringBuilder.append(token.image);
-	 }
-
-	 rightDeduction = rightDeduction()
-	 {
-	 	deductionStringBuilder.append(rightDeduction);
-	 }
-	
-	 {
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	 }
-}
-
-
-String leftDeduction() :
-{
-	Token token;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	token = <IDENT_POINT_IDENT>
-	{
-		deductionStringBuilder.append(token.image);
-	} 
-	{
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	}	
-}
-
-String rightDeduction() :
-{
-	Token token;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	
-	token = <CONSTANT>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
-	
-	|
-	token = <IDENT_POINT_IDENT>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
-	
-	|
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
  
-	|
-	token = <EXPRE>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
-	
-	{
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	}	
-}
-
-
-String functionParam(int type) :
-{
-	Token token = null;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	token = <CONSTANT>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
-	
-	|
-	token = <IDENT_POINT_IDENT>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
-	
-	|
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();
-	}
- 	|	token = <EXPRE>	{		deductionStringBuilder.append(token.image);
-		return deductionStringBuilder.toString();	}		{
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	}
-}
-
-String tablefunction() :
-{
-	int type = 0;
-	Token token;
-	String functionParam;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	 
-		/*<IDENTIFIER> 例如:tablename */
-		token = <IDENTIFIER>
-		{
-			String tablename = token.image;
-			deductionStringBuilder.append(tablename);
-			System.out.println("tablename:" + tablename);
-			if(tablename.toUpperCase().equals("ML")){
-				type = 1;
-			}
-		} 
- 
-		token = <T_OPEN_SB> 
-		{
-			deductionStringBuilder.append(token.image);
-		}
-		
-		functionParam = functionParam(type)
-		{
-			deductionStringBuilder.append(functionParam);
-		}
-		
-		(
-			token = <T_COMM> 
-			functionParam = functionParam(type)
-			{
-				deductionStringBuilder.append(functionParam);
-			}
-		
-		)*
-		
-		token = <T_CLOSE_SB> 
-		{
-			deductionStringBuilder.append(token.image);
-		}
-	 
-		{
-			System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-			return deductionStringBuilder.toString();
-		}
- 
-}
