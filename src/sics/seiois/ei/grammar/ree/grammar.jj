@@ -452,6 +452,12 @@ String ree() :
 }
 {
    //t0.id = t1.id ^ t0.name = t1.name ^ table(t0) ^ table1(t1) ^ ML(t0, t1, t2) -> t0.city = t1.city
+   ";"
+ 	{
+ 	  System.out.println("over!");
+  		return "";	  
+ 	}
+  | 
    < T_DEDUCTION >
    {
 		return ree();
