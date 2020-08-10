@@ -64,6 +64,16 @@ TOKEN :
 	<IDENTIFIER: ( <LETTER> ) (<LETTER> | "_" | <DIGIT>)* >
 }
 
+TOKEN :
+{
+	<IDENT_POINT_IDENT: <IDENTIFIER> "." <IDENTIFIER> >
+}
+
+TOKEN :
+{
+	<EXPRE: <T_SINGLE_Q> <IDENTIFIER> <T_SINGLE_Q>  >
+}
+
 
 TOKEN :
 {
@@ -300,18 +310,18 @@ String ree() :
 }
 {
 
-//	tablefunction = tablefunction()//	{//		ruleStringBuilder.append(tablefunction);//	}
-	
-	deduction = deduction()	{		ruleStringBuilder.append(deduction);	}
-	
+	tablefunction = tablefunction()	{		ruleStringBuilder.append(tablefunction);	}
 	
 	//重复
 	(
 	 	token = <T_AND> 	 	{	 		ruleStringBuilder.append(token.image);	 	}
-	 	deduction = deduction()	 	{			ruleStringBuilder.append(deduction);	 	}
-	 	
-//	 	|//		tablefunction = tablefunction()//		{//			ruleStringBuilder.append(tablefunction);//		}
+	 		tablefunction = tablefunction()		{			ruleStringBuilder.append(tablefunction);		}
 	)*
+	
+	
+	token = <T_AND>  
+	 
+	deduction = deduction()	{		ruleStringBuilder.append(deduction);	}			//重复	(	 	token = <T_AND> 	 	{	 		ruleStringBuilder.append(token.image);	 	}	 	deduction = deduction()	 	{			ruleStringBuilder.append(deduction);	 	}	)*
 	
 
 	//		//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	 //	)*
@@ -319,6 +329,7 @@ String ree() :
 	/* 推导-> */
 	token = <T_DEDUCTION>
 	{
+		System.out.println("->");
 		ruleStringBuilder.append(token.image);
 	}
 	
@@ -343,72 +354,6 @@ String ree() :
 		return ruleStringBuilder.toString();
 	}
 }
-
-String leftDeduction() :
-{
-	Token token;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	/*<IDENTIFIER>.<IDENTIFIER> 例如:t0.id */
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-	} 
-	"."
-	{
-		deductionStringBuilder.append(".");
-	}
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-	}
-	
-	{
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	}	
-}
-
-String rightDeduction() :
-{
-	Token token;
-	StringBuilder deductionStringBuilder = new StringBuilder();
-}
-{
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-	} 
-	"."
-	{
-		deductionStringBuilder.append(".");
-	}
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-	}
-	
-	|
-	<T_SINGLE_Q>
-	token = <IDENTIFIER>
-	{
-		deductionStringBuilder.append(token.image);
-	}
-	<T_SINGLE_Q>
-	
-	|
-	token = <CONSTANT>
-	{
-		deductionStringBuilder.append(token.image);
-	}
-	
-	{
-		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
-		return deductionStringBuilder.toString();
-	}	
-}
-
 
 /**
  * 
@@ -450,18 +395,91 @@ String deduction() :
 	 }
 }
 
+
+String leftDeduction() :
+{
+	Token token;
+	StringBuilder deductionStringBuilder = new StringBuilder();
+}
+{
+	token = <IDENT_POINT_IDENT>
+	{
+		deductionStringBuilder.append(token.image);
+	} 
+	{
+		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
+		return deductionStringBuilder.toString();
+	}	
+}
+
+String rightDeduction() :
+{
+	Token token;
+	StringBuilder deductionStringBuilder = new StringBuilder();
+}
+{
+	
+	token = <CONSTANT>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+	
+	|
+	token = <IDENT_POINT_IDENT>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+	
+	|
+	token = <IDENTIFIER>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+ 
+	|
+	token = <EXPRE>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+	
+	{
+		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
+		return deductionStringBuilder.toString();
+	}	
+}
+
+
 String functionParam(int type) :
 {
 	Token token = null;
 	StringBuilder deductionStringBuilder = new StringBuilder();
 }
 {
+	token = <CONSTANT>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+	
+	|
+	token = <IDENT_POINT_IDENT>
+	{
+		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();
+	}
+	
+	|
 	token = <IDENTIFIER>
 	{
 		deductionStringBuilder.append(token.image);
-	} 
-//	"."//	{//		deductionStringBuilder.append(".");//	}//	token = <IDENTIFIER>//	{//		deductionStringBuilder.append(token.image);//	}//	//	|//	<T_SINGLE_Q>//	token = <IDENTIFIER>//	{//		deductionStringBuilder.append(token.image);//	}//	<T_SINGLE_Q>//	//	|//	token = <CONSTANT>//	{//		deductionStringBuilder.append(token.image);//	}
-	{
+		return deductionStringBuilder.toString();
+	}
+ 	|	token = <EXPRE>	{		deductionStringBuilder.append(token.image);
+		return deductionStringBuilder.toString();	}		{
 		System.out.println("deductionCondition:" + deductionStringBuilder.toString());
 		return deductionStringBuilder.toString();
 	}
