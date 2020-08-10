@@ -7,7 +7,7 @@ public class eg1 implements eg1Constants {
     eg1 parser = new eg1(System.in);
     while (true) {
       System.out.println("Reading from standard input...");
-      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");
+      System.out.print("Enter an expression like \u005c"1+(2+3)*4;\u005c" :");
       try {
         switch (eg1.one_line()) {
         case 0:

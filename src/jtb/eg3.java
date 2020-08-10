@@ -12,7 +12,7 @@ public class eg3 implements eg3Constants {
    public static void main(String args[])
    {
       System.out.println("Reading from standard input...");
-      System.out.print("Enter an expression like \"1+(2+3)*var;\" :");
+      System.out.print("Enter an expression like \u005c"1+(2+3)*var;\u005c" :");
       new eg3(System.in);
       try
       {
@@ -400,6 +400,7 @@ public class eg3 implements eg3Constants {
   }
 
 }
+@SuppressWarnings("all")
 class MyVisitor extends DepthFirstVisitor
 {
    public void visit(NodeToken n)
@@ -408,6 +409,7 @@ class MyVisitor extends DepthFirstVisitor
    }
 }
 
+@SuppressWarnings("all")
 class JTBToolkit {
    static NodeToken makeNodeToken(Token t) {
       return new NodeToken(t.image.intern(), t.kind, t.beginLine, t.beginColumn, t.endLine, t.endColumn);

@@ -21,9 +21,8 @@ package sics.seiois.ei.grammar.ree;
 public class Grammar {
   public static void main(String args[]) throws ParseException {
     Grammar parser = new Grammar(System.in);
-    Grammar.ree();
+	Grammar.statement();
   }
-  
 }
 PARSER_END(Grammar)
 
@@ -281,39 +280,167 @@ TOKEN :
 
 TOKEN :
 {	/* Identifiers */
-	<IDENTIFIER: ( <LETTER> ) (<LETTER> | "_" | <DIGIT>)* >
+	< IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
 }
 
 TOKEN :
 {
-	<IDENT_POINT_IDENT: <IDENTIFIER> <T_POINT>  <IDENTIFIER> >
-}
-
-TOKEN :
-{
-	<EXPRE: <T_SINGLE_Q> <IDENTIFIER> <T_SINGLE_Q>  >
-}
-
-
-TOKEN :
-{
-    < CONSTANT: ( <DIGIT> )+ >
+    < CONSTANT: ( <DIGIT> )+("."(< DIGIT>)+)? >
 |   < #DIGIT: ["0" - "9"] >
 }
 
 TOKEN :
 {
-	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT> <T_COMM> <IDENT_POINT_IDENT> <T_CLOSE_SB> >
+	< IDENT_POINT_IDENT: (<IDENTIFIER>) + (<T_POINT>(< IDENTIFIER >)) >
 }
 
 TOKEN :
 {
-	<REE_TABLE: <IDENTIFIER> <T_OPEN_SB> <IDENTIFIER> <T_CLOSE_SB> >
+	< EXPRE: (< T_SINGLE_Q >) + (< IDENTIFIER >(<T_SINGLE_Q>))  >
 }
 
-TOKEN :
+//TOKEN :
+//{
+//  < REE_FUNCATION_PARAM :  <EXPRE> | <IDENT_POINT_IDENT> | <CONSTANT>  >
+//}
+
+
+
+
+//TOKEN :
+//{
+////	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT> <T_COMM> <IDENT_POINT_IDENT> <T_CLOSE_SB> >
+//	<REE_ML: "ML" <T_OPEN_SB> <EXPRE> <T_COMM> <IDENT_POINT_IDENT>  <T_CLOSE_SB> >
+//}
+
+
+
+//TOKEN :
+//{
+//	<REE_TABLE: <IDENTIFIER> <T_OPEN_SB> <IDENTIFIER> <T_CLOSE_SB> >
+//}
+
+//TOKEN :
+//{
+//	<REE_PREDICATE: (<IDENT_POINT_IDENT>) (<T_EQUAL> | <T_EQUAL2> | <T_NOTEQUAL> | <T_NOTEQUAL2>) (<IDENT_POINT_IDENT> | <EXPRE> | <CONSTANT> ) >
+//}
+
+String reePredicate() :
 {
-	<REE_PREDICATE: (<IDENT_POINT_IDENT>) (<T_EQUAL> | <T_EQUAL2> | <T_NOTEQUAL> | <T_NOTEQUAL2>) (<IDENT_POINT_IDENT> | <EXPRE> | <CONSTANT> ) >
+     Token token;
+   	 StringBuilder stringBuilder = new StringBuilder();
+}
+{
+  token = <IDENT_POINT_IDENT>
+  {
+     stringBuilder.append(token.image);
+  }
+
+  token = <T_EQUAL>
+  {
+    stringBuilder.append(token.image);
+  }
+
+  token = <IDENT_POINT_IDENT>
+  {
+     stringBuilder.append(token.image);
+  }
+  
+  {
+    System.out.println("t0.id=t1.id:" + stringBuilder.toString());
+     return stringBuilder.toString();
+  }
+}
+
+//String reeMLNameFuncation() :
+//{
+//   Token tablename, token1, token2, token3;
+//   StringBuilder stringBuilder = new StringBuilder();
+//}
+//{
+//  tablename = "ML"
+//  {
+//     stringBuilder.append(token.image);
+//  }
+//  < T_OPEN_SB >
+//		token3 = < IDENTIFIER >
+//		{
+//		  stringBuilder.append(token3.image);
+//		}
+//		< T_COMM >
+//		token3 = < IDENTIFIER >
+//		{
+//		  stringBuilder.append(token3.image);
+//		}
+//		< T_COMM >
+//		token3 = < IDENTIFIER >
+//		{
+//		  stringBuilder.append(token3.image);
+//		}
+//	(
+//	  < T_COMM >
+//	  
+//		  	  (
+//					token1 = < CONSTANT >
+//					{
+//					  stringBuilder.append(token1.image);
+//					}
+//					|
+//					 token2 = < EXPRE >
+//					{
+//					  stringBuilder.append(token2.image);
+//					}
+//					|
+//					 token3 = < IDENT_POINT_IDENT >
+//					{
+//					  stringBuilder.append(token3.image);
+//					}
+//			  )
+//	)*
+//  < T_CLOSE_SB >
+//  {
+//    System.out.println("table(xx,xx,...):" + stringBuilder.toString());
+//    return stringBuilder.toString();
+//  }
+//}
+
+String reeTableNameFuncation() :
+{
+   Token tablename, token1, token2, token3;
+   StringBuilder stringBuilder = new StringBuilder();
+}
+{
+  tablename = < IDENTIFIER >
+  {
+     stringBuilder.append(token.image);
+  }
+  < T_OPEN_SB >
+  	  (	       < T_COMM >
+	       {
+	         
+	       }
+	       | 
+			token3 = < IDENTIFIER >
+			{
+			  stringBuilder.append(token3.image);
+			}
+		)*
+  < T_CLOSE_SB >
+  {
+    System.out.println("table(xx,xx,...):" + stringBuilder.toString());
+    return stringBuilder.toString();
+  }
+}
+
+String statement() :
+{
+  
+}
+{
+  ree() ";"
+  {
+    return "";
+  }
 }
 
 String ree() : 
@@ -324,20 +451,29 @@ String ree() :
 	Token token = null;
 }
 {
-	
-//	token = <REE_ML>//	{//		ruleStringBuilder.append(token.image);//	}
-	
-//	|//	token = <REE_TABLE>//	{//		System.out.println(token.image);//		ruleStringBuilder.append(token.image);//	}//	//	|	token = <IDENTIFIER>	{
-		System.out.println(token.image);		ruleStringBuilder.append(token.image);	}
-	
-//	(//		token = <T_AND> //			token = <REE_ML>//			{//				ruleStringBuilder.append(token.image);//			}//			//			|//			token = <REE_TABLE>//			{//				System.out.println(token.image);//				ruleStringBuilder.append(token.image);//			}//			//			|//			token = <REE_PREDICATE>//			{//				ruleStringBuilder.append(token.image);//			}//	)*
-		
-
-//	tablefunction = tablefunction()//	{//		ruleStringBuilder.append(tablefunction);//	}//	//	//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 //		tablefunction = tablefunction()//		{//			ruleStringBuilder.append(tablefunction);//		}//	)*//	//	//	token = <T_AND>  //	 //	deduction = deduction()//	{//		ruleStringBuilder.append(deduction);//	}//	//	//	//重复//	(//	 	token = <T_AND> //	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	)*
- 
-	
-//	/* 推导-> *///	token = <T_DEDUCTION>//	{//		System.out.println("->");//		ruleStringBuilder.append(token.image);//	}//	//	deduction = deduction()//	{//		ruleStringBuilder.append(deduction);//	}//	//重复//	(//	 	token = <T_AND>//	 	{//	 		ruleStringBuilder.append(token.image);//	 	}//	 	deduction = deduction()//	 	{//			ruleStringBuilder.append(deduction);//	 	}//	)*
-	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
+   //t0.id = t1.id ^ t0.name = t1.name ^ table(t0) ^ table1(t1) ^ ML(t0, t1, t2) -> t0.city = t1.city
+   < T_DEDUCTION >
+   {
+		return ree();
+    }
+   | 
+   < T_AND >
+   {
+      System.out.println("^");
+	   return ree();
+   }
+   | 
+	deduction = reePredicate()
+	{
+	   System.out.println(deduction);
+	   return ree();
+	}
+    | 
+	tablefunction = reeTableNameFuncation()
+	{
+	   System.out.println(tablefunction);
+	   return ree();
+	}	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
 }
 
 /**

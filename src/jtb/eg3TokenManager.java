@@ -283,7 +283,7 @@ null, "\73", "\53", "\55", "\52", "\57", "\45", "\50", "\51", };
 
 /** Lexer state names. */
 public static final String[] lexStateNames = {
-   "DEFAULT", 
+   "DEFAULT",
 };
 static final long[] jjtoToken = {
    0x3fc881L, 
@@ -379,13 +379,13 @@ public static Token getNextToken()
 
   EOFLoop :
   for (;;)
-  {   
-   try   
-   {     
+  {
+   try
+   {
       curChar = input_stream.BeginToken();
-   }     
+   }
    catch(java.io.IOException e)
-   {        
+   {
       jjmatchedKind = 0;
       matchedToken = jjFillToken();
       return matchedToken;
