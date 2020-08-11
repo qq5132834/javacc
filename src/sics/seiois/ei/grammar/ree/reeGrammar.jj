@@ -11,6 +11,12 @@ options {
 PARSER_BEGIN(ReeGrammar)
 package sics.seiois.ei.grammar.ree;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import sics.seiois.ei.grammar.ree.*;
+import sics.seiois.ei.grammar.ree.dto.ReeTableInfo;
+
 public class ReeGrammar {
   public static void main(String args[]) throws ParseException {
     ReeGrammar parser = new ReeGrammar(System.in);
@@ -18,6 +24,7 @@ public class ReeGrammar {
   }
 }
 PARSER_END(ReeGrammar)
+
 
 /**
 * 
@@ -286,61 +293,129 @@ TOKEN :
 |	< #IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
 }
 
-void reePredicate() :
-{
-     Token token;
-   	 StringBuilder stringBuilder = new StringBuilder();
-}
-{
-  additiveExpression() token = <T_EQUAL> additiveExpression()
-}
 
-void additiveExpression() : 
+String additiveExpression() : 
 {
 	Token token;
 }
 {
 	token = < REE_PARAM >
 	{
-		System.out.println("param: " + token.image);
+//		System.out.println("param: " + token.image);
 	}
-}
-
-
-void reeTableNameFuncation() :
-{
-   Token tablename, token1, token2, token3;
-   String param1, param2, param3;
-   StringBuilder stringBuilder = new StringBuilder();
-}
-{
-	< REE_TABLE > additiveExpression() ( < T_COMM >  additiveExpression() )*  < T_CLOSE_SB >
 	{
-		
+		return token.image;
 	}
+}
+
+//谓词表达式
+ReeTableInfo reePredicate() :
+{
+     Token token;
+   	 ReeTableInfo reeTableInfo = null;
+   	 String leftStr;
+   	 String rightStr;
+}
+{
+  leftStr = additiveExpression()  token = <T_EQUAL>  rightStr = additiveExpression()
+ 
+     {
+       //左边谓词表达式	
+  	   if(leftStr != null){
+  	   	  
+  	   	  String[] arr = leftStr.split("\\.");
+  	   	  if(arr.length == 1){
+			  String columnName = arr[0];
+  	   	  }
+  	   	  else if(arr.length == 2){
+  	   	  	  String aliasName = arr[0];
+  	   	  	  String columnName = arr[1];
+  	   	  	  reeTableInfo = new ReeTableInfo();
+  	   	  	  reeTableInfo.setAliasName(aliasName);
+  	   	  	  return reeTableInfo;
+  	   	  }
+  	   }	
+	   throw new ParseException("左边[" + leftStr + "]谓词输入错误");
+  }
+}
+
+
+ReeTableInfo reeTableNameFuncation() :
+{
+   Token funcationToken;
+   String param1;
+   ReeTableInfo reeTableInfo = new ReeTableInfo();
+}
+{
+	funcationToken = < REE_TABLE > 
+	{
+		String tablename = funcationToken.image;
+		tablename = tablename.replaceAll("\\(", "");
+		//表名
+		reeTableInfo.setTableName(tablename);	 
+	}
+	
+	param1 = additiveExpression() 
+	{
+		reeTableInfo.setAliasName(param1); //只获取第一个参数
+	}
+	
+	( 
+		  < T_COMM >  
+		  additiveExpression() 	  
+	)*  
+	
+	< T_CLOSE_SB >
+	
+	{
+		System.out.println("reeTableNameFuncation:" + reeTableInfo.toString()); 
+		return reeTableInfo;
+	}
+	
 }
 
 
 String statement() :
 {
-  
+   List<ReeTableInfo> xReeTableInfoList = new ArrayList<ReeTableInfo>();
+   List<ReeTableInfo> yReeTableInfoList = new ArrayList<ReeTableInfo>();
 }
 {
-  ree() "->" ree() ";"
+  ree(xReeTableInfoList) "->" ree(yReeTableInfoList) ";"
   {
+  	System.out.println("xReeTableInfoList:" + xReeTableInfoList.toString());
+  	System.out.println("yReeTableInfoList:" + yReeTableInfoList.toString());
     return "";
   }
 }
 
-void ree() : 
+
+void ree(List<ReeTableInfo> reeTableInfoList) : 
 {
-	StringBuilder ruleStringBuilder = new StringBuilder();
-	String deduction;
-	String tablefunction;
 	Token token = null;
+	
+	ReeTableInfo reeTableInfo = null;
 }
 {
-   (	    token = < T_AND >	    {	      System.out.println(token.image);	    }	    | 		reePredicate()		{		   System.out.println("reePredicate");		}	    | 		reeTableNameFuncation()		{	   		System.out.println("tablefunction");		}	)*
-	{		System.out.println(ruleStringBuilder.toString());	}
+   (
+	    token = < T_AND >
+	    | 
+		reeTableInfo = reePredicate()
+		{
+			if(reeTableInfo != null){
+				System.out.println("reePredicate.left:" + reeTableInfo.toString());
+				reeTableInfoList.add(reeTableInfo);
+			}
+		}
+	    | 
+		reeTableInfo = reeTableNameFuncation()
+		{
+	   		if(reeTableInfo != null){
+				reeTableInfoList.add(reeTableInfo);
+			}
+		}
+	)*
+	
 }
+
  
