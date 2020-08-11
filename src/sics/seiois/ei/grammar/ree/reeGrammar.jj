@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sics.seiois.ei.grammar.ree.*;
-import sics.seiois.ei.grammar.ree.dto.ReeTableInfo;
+import sics.seiois.ei.grammar.ree.dto.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class ReeGrammar {
-  public static void main(String args[]) throws ParseException {
-    ReeGrammar parser = new ReeGrammar(System.in);
-	parser.statement();
-  }
+
 }
 PARSER_END(ReeGrammar)
 
@@ -272,11 +272,16 @@ TOKEN :
 |	< T_EQUAL2: "==" >
 |	< T_NOTEQUAL: "<>" >
 |	< T_NOTEQUAL2: "!=" >
+|	<LESS_THAN_OPERATOR: "<">
+|	<LESS_THAN_OR_EQUALS_OPERATOR: "<=">
+|	<GREATER_THAN_OPERATOR: ">">
+|	<GREATER_THAN_OR_EQUALS_OPERATOR: ">=">
 |	< T_SINGLE_Q: "'" >
 |	< T_AND: "^">
 |	< T_COMM: ",">
 |	< T_POINT: ".">
 }
+ 
 
 TOKEN :
 {
@@ -316,8 +321,9 @@ ReeTableInfo reePredicate() :
    	 String leftStr;
    	 String rightStr;
 }
-{
-  leftStr = additiveExpression()  token = <T_EQUAL>  rightStr = additiveExpression()
+{ 
+	
+  leftStr = additiveExpression()  (<T_EQUAL> | <T_EQUAL2> | <T_NOTEQUAL> | <T_NOTEQUAL2> | <LESS_THAN_OPERATOR> | <LESS_THAN_OR_EQUALS_OPERATOR> | <GREATER_THAN_OPERATOR> | <GREATER_THAN_OR_EQUALS_OPERATOR>  )   rightStr = additiveExpression()
  
      {
        //左边谓词表达式	
@@ -335,7 +341,7 @@ ReeTableInfo reePredicate() :
   	   	  	  return reeTableInfo;
   	   	  }
   	   }	
-	   throw new ParseException("左边[" + leftStr + "]谓词输入错误");
+	   throw new ParseException("leftStr [" + leftStr + "] error.");
   }
 }
 
@@ -371,11 +377,10 @@ ReeTableInfo reeTableNameFuncation() :
 		System.out.println("reeTableNameFuncation:" + reeTableInfo.toString()); 
 		return reeTableInfo;
 	}
-	
 }
 
 
-String statement() :
+ReeCondition statement() :
 {
    List<ReeTableInfo> xReeTableInfoList = new ArrayList<ReeTableInfo>();
    List<ReeTableInfo> yReeTableInfoList = new ArrayList<ReeTableInfo>();
@@ -383,9 +388,10 @@ String statement() :
 {
   ree(xReeTableInfoList) "->" ree(yReeTableInfoList) ";"
   {
-  	System.out.println("xReeTableInfoList:" + xReeTableInfoList.toString());
-  	System.out.println("yReeTableInfoList:" + yReeTableInfoList.toString());
-    return "";
+  	ReeCondition reeCondition = new ReeCondition();
+  	reeCondition.setxReeTableInfoList(xReeTableInfoList);
+  	reeCondition.setyReeTableInfoList(yReeTableInfoList);
+    return reeCondition;
   }
 }
 

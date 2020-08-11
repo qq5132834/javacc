@@ -31,12 +31,5 @@ public class ReeTableInfo {
 	public String toString() {
 		return "tableName:" + tableName + ",aliasName:" + aliasName + ",columnName:" + this.columnName.toString();
 	}
-	public static void main(String[] args) {
-		"".split("\\.");
-		String str = "ML(";
-		str = str.replaceAll("\\(", "");
-		System.out.println(str);
-	}
-	
 	
 }
