@@ -2,29 +2,22 @@
  * JavaCC file
  *
  * 例子:
- * [REE:  auto_ei_mid_ei_dimension_386694932111.t0.citycompany == '成都公司'  ->  auto_ei_mid_ei_dimension_386694932111.t0.citycompany == auto_ei_mid_ei_dimension_386694932111.t1.citycompany];
- * [REE:  auto_ei_mid_ei_dimension_386694932111.t0.projectdetailname == auto_ei_mid_ei_dimension_386694932111.t1.projectdetailname ->  auto_ei_mid_ei_dimension_386694932111.t0.externalname == auto_ei_mid_ei_dimension_386694932111.t1.externalname];
- * [REE:  auto_ei_mid_ei_dimension_386694932111.t0.projectdescription == auto_ei_mid_ei_dimension_386694932111.t1.projectdescription,  auto_ei_mid_ei_dimension_386694932111.t0.citycompany == '成都公司'  ->  auto_ei_mid_ei_dimension_386694932111.t0.icpprojectcode == auto_ei_mid_ei_dimension_386694932111.t1.icpprojectcode,  auto_ei_mid_ei_dimension_386694932111.t0.citycompany == '֣兰州公司'  ]
- * 例子:
- * [REE:  table.t0.column_1 == table.t0.column_1 -> table.t1.column_2 == table.t1.column_2]
- * [REE:  table.t0.column_1 == table.t0.column_1, table.t0.column_11 == table.t0.column_11 -> table.t1.column_2 == table.t1.column_2, table.t1.column_22 == table.t1.column_22]
- * [REE:  table.t0.column_1 == '测试' -> table.t1.column_2 == '测试']
- * [REE:  table.t0.column_1 == '测试' ^ table.t0.column_11 == '测试01' -> table.t1.column_2 == '测试']
+ * table(t0) ^ ML('234', 黄聊, 'GFSD') ^ table1(t1)  ^ t0.id = t1.id ^ t0.name = t1.name -> t0.city = t1.city ;
  */
  
 options {
     JDK_VERSION = "1.5";
 }
-PARSER_BEGIN(Grammar)
+PARSER_BEGIN(ReeGrammar)
 package sics.seiois.ei.grammar.ree;
 
-public class Grammar {
+public class ReeGrammar {
   public static void main(String args[]) throws ParseException {
-    Grammar parser = new Grammar(System.in);
-	Grammar.statement();
+    ReeGrammar parser = new ReeGrammar(System.in);
+	parser.statement();
   }
 }
-PARSER_END(Grammar)
+PARSER_END(ReeGrammar)
 
 /**
 * 
