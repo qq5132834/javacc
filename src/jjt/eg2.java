@@ -5,7 +5,7 @@ package jjt;
 public class eg2/*@bgen(jjtree)*/implements eg2TreeConstants, eg2Constants {/*@bgen(jjtree)*/
   protected static JJTeg2State jjtree = new JJTeg2State();public static void main(String args[]) {
     System.out.println("Reading from standard input...");
-    System.out.print("Enter an expression like \u005c"1+(2+3)*var;\u005c" :");
+    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");
     new eg2(System.in);
     try {
       SimpleNode n = eg2.Start();

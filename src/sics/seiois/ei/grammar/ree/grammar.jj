@@ -279,84 +279,57 @@ TOKEN :
 }
 
 TOKEN :
-{	/* Identifiers */
-	< #IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
-}
-
+{
+	< REE_TABLE : (<IDENTIFIER>) + (<T_OPEN_SB>) >
+} 
+ 
 TOKEN :
 {
-    < #CONSTANT: ( <DIGIT> )+("."(< DIGIT>)+)? >
+	< REE_PARAM :  ( < IDENTIFIER > | < CONSTANT > | < IDENT_POINT_IDENT > | < EXPRE >) >
+|   < #CONSTANT: ( <DIGIT> )+("."(< DIGIT>)+)? >
 |   < #DIGIT: ["0" - "9"] >
+|   < #IDENT_POINT_IDENT: (<IDENTIFIER>) + (<T_POINT>) + (< IDENTIFIER >) >
+|   < #EXPRE: (< T_SINGLE_Q >) + (< IDENTIFIER > | <CONSTANT>) + (<T_SINGLE_Q>)  >
+|	< #IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
 }
 
-TOKEN :
-{
-	< #IDENT_POINT_IDENT: (<IDENTIFIER>) + (<T_POINT>(< IDENTIFIER >)) >
-}
+ 
 
-TOKEN :
-{
-	< #EXPRE: (< T_SINGLE_Q >) + (< IDENTIFIER >(<T_SINGLE_Q>))  >
-}
-
-TOKEN :
-{
-  	< REE_PARAM :  ( < IDENTIFIER > | < CONSTANT > | < IDENT_POINT_IDENT > | < EXPRE >) >
-}
-
-String reePredicate() :
+void reePredicate() :
 {
      Token token;
    	 StringBuilder stringBuilder = new StringBuilder();
 }
 {
-  token = <REE_PARAM>
-  {
-     stringBuilder.append(token.image);
-  }
-
-  token = <T_EQUAL>
-  {
-    stringBuilder.append(token.image);
-  }
-
-  token = <REE_PARAM>
-  {
-     stringBuilder.append(token.image);
-  }
-  
-  {
-    System.out.println("t0.id=t1.id:" + stringBuilder.toString());
-     return stringBuilder.toString();
-  }
+  additiveExpression() token = <T_EQUAL> additiveExpression()
 }
 
-String reeTableNameFuncation() :
+void additiveExpression() : 
+{
+	Token token;
+}
+{
+	token = < REE_PARAM >
+	{
+		System.out.println("param: " + token.image);
+	}
+}
+
+
+void reeTableNameFuncation() :
 {
    Token tablename, token1, token2, token3;
+   String param1, param2, param3;
    StringBuilder stringBuilder = new StringBuilder();
 }
 {
-  tablename = < REE_PARAM >
-  {
-     stringBuilder.append(token.image);
-  }
-  < T_OPEN_SB >
-  	  (	       < T_COMM >
-	       {
-	         
-	       }
-	       | 
-			token3 = < REE_PARAM >
-			{
-			  stringBuilder.append(token3.image);
-			}
-		)*
-  < T_CLOSE_SB >
-  {
-    System.out.println("table(xx,xx,...):" + stringBuilder.toString());
-    return stringBuilder.toString();
-  }
+//  < REE_PARAM >  < T_OPEN_SB > additiveExpression()   < T_CLOSE_SB >//  {////  	( < T_COMM >  additiveExpression() )*//  }
+
+	< REE_TABLE > additiveExpression() ( < T_COMM >  additiveExpression() )*  < T_CLOSE_SB >
+	{
+		
+	}
+
 }
 
 
@@ -365,13 +338,14 @@ String statement() :
   
 }
 {
-  ree() ";"
+  ree() 
+//  "->" ree() ";"
   {
     return "";
   }
 }
 
-String ree() : 
+void ree() : 
 {
 	StringBuilder ruleStringBuilder = new StringBuilder();
 	String deduction;
@@ -379,35 +353,11 @@ String ree() :
 	Token token = null;
 }
 {
-   // table(t0) ^ table1(t1) ^ ML(t0, t1, t2) ^ t0.id = t1.id ^ t0.name = t1.name -> t0.city = t1.city ;
-   ";"
- 	{
- 	  System.out.println("over!");
-  		return "";	  
- 	}
-  | 
-   < T_DEDUCTION >
-   {
-		return ree();
-    }
-   | 
-   < T_AND >
-   {
-      System.out.println("^");
-	   return ree();
-   }
-   | 
-	deduction = reePredicate()
-	{
-	   System.out.println(deduction);
-	   return ree();
-	}
-//    | 
-//	tablefunction = reeTableNameFuncation()
-//	{
-//	   System.out.println(tablefunction);
-//	   return ree();
-//	}
-	{		System.out.println(ruleStringBuilder.toString());		return ruleStringBuilder.toString();	}
+   // table(t0) ^ ML('234', 黄聊, 'GFSD') ^ table1(t1)  ^ t0.id = t1.id ^ t0.name = t1.name -> t0.city = t1.city ;
+   
+//   		token = < REE_PARAM >//	   {//	      System.out.println(token.image);//	   }
+	   
+   (			   token = < T_AND >	   {	      System.out.println(token.image);	   }	   | 		reePredicate()		{		   System.out.println("reePredicate");		}	    | 		reeTableNameFuncation()		{	   		System.out.println("tablefunction");		}	)*
+	{		System.out.println(ruleStringBuilder.toString());	}
 }
  
