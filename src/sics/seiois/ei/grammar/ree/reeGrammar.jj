@@ -286,8 +286,6 @@ TOKEN :
 |	< #IDENTIFIER: ( < LETTER > ) (< LETTER > | "_" | < DIGIT > )*  >
 }
 
- 
-
 void reePredicate() :
 {
      Token token;
@@ -342,11 +340,7 @@ void ree() :
 	Token token = null;
 }
 {
-   // table(t0) ^ ML('234', 黄聊, 'GFSD') ^ table1(t1)  ^ t0.id = t1.id ^ t0.name = t1.name -> t0.city = t1.city ;
-   
-//   		token = < REE_PARAM >//	   {//	      System.out.println(token.image);//	   }
-	   
-   (			   token = < T_AND >	   {	      System.out.println(token.image);	   }	   | 		reePredicate()		{		   System.out.println("reePredicate");		}	    | 		reeTableNameFuncation()		{	   		System.out.println("tablefunction");		}	)*
-	{		System.out.println(ruleStringBuilder.toString());	}
+   (	    token = < T_AND >	    {	      System.out.println(token.image);	    }	    | 		reePredicate()		{		   System.out.println("reePredicate");		}	    | 		reeTableNameFuncation()		{	   		System.out.println("tablefunction");		}	)*
+	{		System.out.println(ruleStringBuilder.toString());	}
 }
  
