@@ -316,13 +316,10 @@ void reeTableNameFuncation() :
    StringBuilder stringBuilder = new StringBuilder();
 }
 {
-//  < REE_PARAM >  < T_OPEN_SB > additiveExpression()   < T_CLOSE_SB >//  {////  	( < T_COMM >  additiveExpression() )*//  }
-
 	< REE_TABLE > additiveExpression() ( < T_COMM >  additiveExpression() )*  < T_CLOSE_SB >
 	{
 		
 	}
-
 }
 
 
@@ -331,8 +328,7 @@ String statement() :
   
 }
 {
-  ree() 
-//  "->" ree() ";"
+  ree() "->" ree() ";"
   {
     return "";
   }
